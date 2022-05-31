@@ -1,0 +1,40 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: http-echo-app
+  labels:
+    app: http-echo-app
+spec:
+  containers:
+  - name: http-echo-app
+    image: hashicorp/http-echo:0.2.3
+    args:
+    - "-text=Hello World! This is a kytay's Kubernetes with kind App"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: http-echo-service
+spec:
+  selector:
+    app: http-echo-app
+  ports:
+  # Default port used by the image
+  - port: 5678
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kytay-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/kytay"
+        backend:
+          service:
+            name: http-echo-service
+            port:
+              number: 5678
+---
